@@ -13,3 +13,12 @@
 
   --font-sans: "Inter", "Noto Sans Devanagari", sans-serif;
 }
+
+@layer base {
+  .dark {
+    --color-bg: #121817;
+    --color-surface: #1C2423;
+    --color-text: #F4F4F5;
+    --color-text-muted: #A1A1AA;
+  }
+}
