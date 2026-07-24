@@ -1,8 +1,8 @@
 import React from "react";
-import { CheckCircle2, AlertCircle, AlertTriangle, Info } from "lucide-react";
-import type { TriageLevel } from "@/types";
+import { CheckCircle2, AlertTriangle, HeartHandshake, Info } from "lucide-react";
+import type { WellnessSignal } from "@/types";
 
-export type BadgeTone = TriageLevel | "neutral";
+export type BadgeTone = WellnessSignal | "neutral";
 
 export interface BadgeProps extends React.HTMLAttributes<HTMLSpanElement> {
   tone?: BadgeTone;
@@ -17,20 +17,20 @@ export const Badge: React.FC<BadgeProps> = ({
   ...props
 }) => {
   const toneStyles = {
-    self_care: "bg-self-care/15 text-self-care border-self-care/30",
-    monitor: "bg-monitor/15 text-monitor border-monitor/30",
-    escalate: "bg-escalate/15 text-escalate border-escalate/30",
+    steady: "bg-steady/15 text-steady border-steady/30",
+    notice: "bg-notice/15 text-notice border-notice/30",
+    reach_out: "bg-reach-out/15 text-reach-out border-reach-out/30",
     neutral: "bg-text-muted/15 text-text-muted border-text-muted/30",
   };
 
   const getToneLabel = (t: BadgeTone) => {
     switch (t) {
-      case "self_care":
-        return "Self-care";
-      case "monitor":
-        return "Monitor";
-      case "escalate":
-        return "Escalate";
+      case "steady":
+        return "Steady";
+      case "notice":
+        return "Notice & Care";
+      case "reach_out":
+        return "Reach Out";
       default:
         return "Info";
     }
@@ -38,12 +38,12 @@ export const Badge: React.FC<BadgeProps> = ({
 
   const getToneIcon = (t: BadgeTone) => {
     switch (t) {
-      case "self_care":
+      case "steady":
         return <CheckCircle2 className="w-4 h-4 shrink-0" aria-hidden="true" />;
-      case "monitor":
+      case "notice":
         return <AlertTriangle className="w-4 h-4 shrink-0" aria-hidden="true" />;
-      case "escalate":
-        return <AlertCircle className="w-4 h-4 shrink-0" aria-hidden="true" />;
+      case "reach_out":
+        return <HeartHandshake className="w-4 h-4 shrink-0" aria-hidden="true" />;
       default:
         return <Info className="w-4 h-4 shrink-0" aria-hidden="true" />;
     }

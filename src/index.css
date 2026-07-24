@@ -1,24 +1,43 @@
 @import "tailwindcss";
 
 @theme {
-  --color-bg: #FAF9F6;
+  --color-bg: #F7F7FB;
   --color-surface: #FFFFFF;
-  --color-primary: #0F766E;
-  --color-primary-hover: #0B5A54;
-  --color-text: #1C1917;
-  --color-text-muted: #57534E;
-  --color-self-care: #16A34A;
-  --color-monitor: #D97706;
-  --color-escalate: #DC5F45;
+  --color-primary: #7C9885;
+  --color-primary-hover: #64806D;
+  --color-accent: #B4A7D6;
+  --color-sky: #A8D0E6;
+  --color-text: #33322E;
+  --color-text-muted: #6B6A66;
+  --color-steady: #7C9885;
+  --color-notice: #E3B23C;
+  --color-reach-out: #C97B84;
 
-  --font-sans: "Inter", "Noto Sans Devanagari", sans-serif;
+  --font-sans: "Inter", "Noto Sans Devanagari", "Noto Sans Bengali",
+    "Noto Sans Tamil", "Noto Sans Telugu", "Noto Sans Gujarati",
+    "Noto Sans Gurmukhi", sans-serif;
 }
 
 @layer base {
-  .dark {
-    --color-bg: #121817;
-    --color-surface: #1C2423;
-    --color-text: #F4F4F5;
-    --color-text-muted: #A1A1AA;
+  body {
+    background-color: var(--color-bg);
+    color: var(--color-text);
+    font-family: var(--font-sans);
+    min-height: 100vh;
   }
+}
+
+/* Dark mode token overrides when html.dark is present */
+.dark {
+  --color-bg: #1A1D20;
+  --color-surface: #24282D;
+  --color-primary: #8CA995;
+  --color-primary-hover: #75927E;
+  --color-accent: #C5B9E7;
+  --color-sky: #B6DAEC;
+  --color-text: #F1F1EF;
+  --color-text-muted: #A3A29E;
+  --color-steady: #8CA995;
+  --color-notice: #E6BD54;
+  --color-reach-out: #D48B94;
 }

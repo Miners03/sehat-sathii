@@ -1,104 +1,143 @@
-import React, { useEffect, useState } from "react";
-import { Link } from "react-router";
-import { Sparkles, ArrowRight, Activity, Calendar, ChevronRight } from "lucide-react";
-import { Button } from "@/components/ui/Button";
+import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router";
+import { MessageCircle, Compass, BarChart3, BookOpen, HeartHandshake, Sparkles, PhoneCall } from "lucide-react";
 import { Card } from "@/components/ui/Card";
-import { Badge } from "@/components/ui/Badge";
+import { Button } from "@/components/ui/Button";
+import { DailyMoodCheckinCard } from "@/components/feature/DailyMoodCheckinCard";
+import { CrisisHelplineBanner } from "@/components/feature/CrisisHelplineBanner";
+import { getLatestMood } from "@/services/moodService";
 import { useAuth } from "@/context/AuthContext";
 import { useLanguage } from "@/context/LanguageContext";
-import { fetchCheckinHistoryService } from "@/services/checkinService";
-import type { CheckinHistoryItem } from "@/types";
+import type { MoodCheckin } from "@/types";
 
 export const HomePage: React.FC = () => {
   const { user } = useAuth();
   const { t } = useLanguage();
-  const [recentHistory, setRecentHistory] = useState<CheckinHistoryItem[]>([]);
-  const [loading, setLoading] = useState(true);
+  const userId = user?.id || "guest_user";
+  const navigate = useNavigate();
+
+  const [latestCheckin, setLatestCheckin] = useState<MoodCheckin | null>(null);
 
   useEffect(() => {
-    fetchCheckinHistoryService()
-      .then((data) => setRecentHistory(data.slice(0, 2)))
-      .finally(() => setLoading(false));
-  }, []);
+    async function loadLatest() {
+      const checkin = await getLatestMood(userId);
+      setLatestCheckin(checkin);
+    }
+    loadLatest();
+  }, [userId]);
 
   return (
-    <div className="space-y-8 max-w-4xl mx-auto py-2">
-      <div className="space-y-1">
-        <h1 className="text-3xl font-extrabold text-text">
-          {t("welcomeBack")}, {user?.name || "Friend"}! 👋
-        </h1>
-        <p className="text-text-muted text-base">
-          Check your health symptoms or review your previous check-ins below.
-        </p>
-      </div>
-
-      <Card className="bg-gradient-to-br from-primary/10 via-surface to-surface border-2 border-primary/20 p-8 space-y-6 shadow-md rounded-3xl">
-        <div className="flex items-start justify-between gap-4">
-          <div className="space-y-2">
-            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-primary text-white text-xs font-semibold">
-              <Sparkles className="w-3.5 h-3.5" /> AI Health Assistant
-            </span>
-            <h2 className="text-2xl font-bold text-text">
-              How are you feeling right now?
-            </h2>
-            <p className="text-text-muted text-base max-w-xl">
-              Describe your symptoms in English or हिन्दी. Takes only 2 minutes to evaluate your condition and guide your next step.
-            </p>
+    <div className="max-w-4xl mx-auto space-y-6 py-6 px-4">
+      {/* Welcome Banner */}
+      <div className="bg-surface p-6 sm:p-8 rounded-3xl border border-text-muted/15 shadow-sm text-left relative overflow-hidden">
+        <div className="max-w-xl space-y-3 relative z-10">
+          <div className="inline-flex items-center gap-2 px-3 py-1 bg-primary/15 text-primary rounded-full text-xs font-bold uppercase tracking-wider">
+            <Sparkles className="w-4 h-4" /> AI Mental Health Companion
           </div>
-          <div className="hidden sm:flex w-16 h-16 rounded-2xl bg-primary/15 items-center justify-center text-primary shrink-0">
-            <Activity className="w-8 h-8" />
-          </div>
-        </div>
-
-        <div>
-          <Link to="/checkin">
-            <Button size="lg" fullWidth variant="primary" className="sm:w-auto text-lg py-4 px-8 shadow-md">
-              <Sparkles className="w-5 h-5 mr-2" />
-              {t("startCheckin")}
-              <ArrowRight className="w-5 h-5 ml-2" />
+          <h1 className="text-3xl font-extrabold text-text">
+            Welcome back to SehatSaathi
+          </h1>
+          <p className="text-base text-text-muted leading-relaxed">
+            Your safe, private space for empathetic AI conversation, mood tracking, guided assessments, and voice journaling.
+          </p>
+          <div className="pt-2 flex flex-wrap gap-3">
+            <Button onClick={() => navigate("/chat")} size="lg">
+              <MessageCircle className="w-5 h-5 mr-2" />
+              Open Companion Chat
             </Button>
-          </Link>
-        </div>
-      </Card>
-
-      <div className="space-y-4">
-        <div className="flex items-center justify-between">
-          <h2 className="text-xl font-bold text-text flex items-center gap-2">
-            <Calendar className="w-5 h-5 text-primary" />
-            Recent Check-ins
-          </h2>
-          <Link to="/history" className="text-sm font-semibold text-primary hover:underline flex items-center gap-1">
-            View All History <ChevronRight className="w-4 h-4" />
-          </Link>
-        </div>
-
-        {loading ? (
-          <Card className="p-6 text-center text-text-muted">Loading recent history...</Card>
-        ) : recentHistory.length === 0 ? (
-          <Card className="p-6 text-center text-text-muted">
-            No previous check-ins found. Click above to complete your first symptom check!
-          </Card>
-        ) : (
-          <div className="grid gap-4 sm:grid-cols-2">
-            {recentHistory.map((item) => (
-              <Card key={item.id} className="p-5 hover:border-primary/30 transition-all space-y-3">
-                <div className="flex items-center justify-between">
-                  <span className="text-xs text-text-muted font-medium">{item.date}</span>
-                  <Badge tone={item.triageLevel} />
-                </div>
-                <h3 className="text-base font-semibold text-text">{item.primarySymptom}</h3>
-                <p className="text-sm text-text-muted">{item.statusText}</p>
-                <Link
-                  to={`/results/${item.id}`}
-                  className="inline-block text-xs font-semibold text-primary hover:underline pt-1"
-                >
-                  View Details & Summary &rarr;
-                </Link>
-              </Card>
-            ))}
           </div>
-        )}
+        </div>
       </div>
+
+      {/* Primary Action: Daily Mood Check-In */}
+      <DailyMoodCheckinCard
+        alreadyDoneToday={latestCheckin}
+        onCheckinSaved={(newCheckin) => setLatestCheckin(newCheckin)}
+      />
+
+      {/* Feature Cards Grid */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 text-left">
+        <Card
+          onClick={() => navigate("/chat")}
+          className="p-5 bg-surface hover:bg-bg border border-text-muted/15 shadow-sm cursor-pointer transition-all hover:scale-[1.02] space-y-3"
+        >
+          <div className="w-10 h-10 rounded-2xl bg-primary/15 text-primary flex items-center justify-center font-bold">
+            <MessageCircle className="w-5 h-5" />
+          </div>
+          <div>
+            <h2 className="font-bold text-base text-text">Companion Chat</h2>
+            <p className="text-xs text-text-muted">Empathetic voice & text conversation whenever you need to talk</p>
+          </div>
+        </Card>
+
+        <Card
+          onClick={() => navigate("/insights")}
+          className="p-5 bg-surface hover:bg-bg border border-text-muted/15 shadow-sm cursor-pointer transition-all hover:scale-[1.02] space-y-3"
+        >
+          <div className="w-10 h-10 rounded-2xl bg-accent/20 text-accent flex items-center justify-center font-bold">
+            <Compass className="w-5 h-5 text-primary" />
+          </div>
+          <div>
+            <h2 className="font-bold text-base text-text">Emotional Insights</h2>
+            <p className="text-xs text-text-muted">Non-clinical, plain-language evaluation & wellness signals</p>
+          </div>
+        </Card>
+
+        <Card
+          onClick={() => navigate("/dashboard")}
+          className="p-5 bg-surface hover:bg-bg border border-text-muted/15 shadow-sm cursor-pointer transition-all hover:scale-[1.02] space-y-3"
+        >
+          <div className="w-10 h-10 rounded-2xl bg-sky/20 text-sky flex items-center justify-center font-bold">
+            <BarChart3 className="w-5 h-5 text-primary" />
+          </div>
+          <div>
+            <h2 className="font-bold text-base text-text">Mood Dashboard</h2>
+            <p className="text-xs text-text-muted">Daily visual trends & AI pattern synthesis from sleep and mood</p>
+          </div>
+        </Card>
+
+        <Card
+          onClick={() => navigate("/journal")}
+          className="p-5 bg-surface hover:bg-bg border border-text-muted/15 shadow-sm cursor-pointer transition-all hover:scale-[1.02] space-y-3"
+        >
+          <div className="w-10 h-10 rounded-2xl bg-primary/15 text-primary flex items-center justify-center font-bold">
+            <BookOpen className="w-5 h-5" />
+          </div>
+          <div>
+            <h2 className="font-bold text-base text-text">AI Voice Journal</h2>
+            <p className="text-xs text-text-muted">Speech-to-text reflections with emotion detection & prompts</p>
+          </div>
+        </Card>
+
+        <Card
+          onClick={() => navigate("/self-care")}
+          className="p-5 bg-surface hover:bg-bg border border-text-muted/15 shadow-sm cursor-pointer transition-all hover:scale-[1.02] space-y-3"
+        >
+          <div className="w-10 h-10 rounded-2xl bg-accent/20 text-accent flex items-center justify-center font-bold">
+            <HeartHandshake className="w-5 h-5 text-primary" />
+          </div>
+          <div>
+            <h2 className="font-bold text-base text-text">Self-Care Library</h2>
+            <p className="text-xs text-text-muted">Box breathing, 5-4-3-2-1 grounding, and sleep relaxation</p>
+          </div>
+        </Card>
+
+        <Card
+          onClick={() => navigate("/settings")}
+          className="p-5 bg-surface hover:bg-bg border border-reach-out/30 shadow-sm cursor-pointer transition-all hover:scale-[1.02] space-y-3"
+        >
+          <div className="w-10 h-10 rounded-2xl bg-reach-out/15 text-reach-out flex items-center justify-center font-bold">
+            <PhoneCall className="w-5 h-5" />
+          </div>
+          <div>
+            <h2 className="font-bold text-base text-text">24/7 KIRAN Helpline</h2>
+            <p className="text-xs text-text-muted">Toll-free Govt helpline (1800-599-0019) always 1 tap away</p>
+          </div>
+        </Card>
+      </div>
+
+      {/* Quick Helpline Section */}
+      <CrisisHelplineBanner pinned={false} />
     </div>
   );
 };

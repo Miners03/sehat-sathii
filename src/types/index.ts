@@ -1,56 +1,57 @@
-export type TriageLevel = "self_care" | "monitor" | "escalate";
+export type WellnessSignal = "steady" | "notice" | "reach_out";
+
+export type AssessmentInstrument = "phq9" | "gad7" | "who5" | "rses";
 
 export interface User {
+  id: string;
   phone: string;
   name?: string;
 }
 
-export interface AuthResponse {
-  token: string;
-  user: User;
+export interface MoodCheckin {
+  id: string;
+  user_id: string;
+  mood: number; // 1 to 5
+  stress: number; // 1 to 5
+  anxiety: number; // 1 to 5
+  sleep: number; // 1 to 10 (hours or rating)
+  energy: number; // 1 to 5
+  motivation: number; // 1 to 5
+  created_at: string;
 }
 
-export interface ChatMessage {
+export interface CompanionMessage {
   id: string;
-  sender: "user" | "bot";
+  sender: "user" | "companion";
   text: string;
   timestamp: string;
 }
 
-export interface StructuredSummary {
-  symptoms: string[];
-  duration: string;
-  severity: string;
-  notes: string;
-  ashaName?: string;
-  phcName?: string;
-  contactPhone?: string;
-}
-
-export interface CheckinSession {
+export interface CompanionSession {
   id: string;
-  createdAt: string;
-  status: "active" | "completed";
-  messages: ChatMessage[];
-  triageLevel?: TriageLevel;
-  summary?: StructuredSummary;
-  contactedByASHA?: boolean;
+  user_id: string;
+  transcript: CompanionMessage[];
+  started_at: string;
+  closed_at?: string;
 }
 
-export interface CheckinHistoryItem {
+export interface AssessmentResponse {
   id: string;
-  date: string;
-  triageLevel: TriageLevel;
-  primarySymptom: string;
-  statusText: string;
-  summary?: StructuredSummary;
-  contactedByASHA?: boolean;
+  user_id: string;
+  instrument: AssessmentInstrument;
+  responses: number[];
+  score: number;
+  wellness_signal: WellnessSignal;
+  created_at: string;
 }
 
-export interface ASHAContact {
-  name: string;
-  center: string;
-  distance: string;
-  phone: string;
-  available: boolean;
+export interface JournalEntry {
+  id: string;
+  user_id: string;
+  mode: "voice" | "text";
+  content: string;
+  ai_summary: string;
+  detected_emotion: string;
+  sentiment: "positive" | "neutral" | "negative";
+  created_at: string;
 }

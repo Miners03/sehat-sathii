@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router";
-import { HeartPulse, ArrowRight, CheckCircle, ShieldCheck } from "lucide-react";
+import { Sparkles, ArrowRight, CheckCircle, ShieldCheck } from "lucide-react";
 import { Input } from "@/components/ui/Input";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
@@ -64,14 +64,14 @@ export const AuthPage: React.FC = () => {
         {/* Logo and Intro */}
         <div className="text-center space-y-2">
           <div className="w-16 h-16 rounded-2xl bg-primary mx-auto flex items-center justify-center text-white shadow-md">
-            <HeartPulse className="w-10 h-10" />
+            <Sparkles className="w-10 h-10" />
           </div>
           <h1 className="text-2xl font-bold text-text pt-2">{t("appName")}</h1>
           <p className="text-text-muted text-base">{t("tagline")}</p>
         </div>
 
         {serverError && (
-          <div className="p-3 bg-escalate/10 border border-escalate/20 text-escalate rounded-xl text-sm font-medium">
+          <div className="p-3 bg-reach-out/10 border border-reach-out/20 text-reach-out rounded-xl text-sm font-medium">
             {serverError}
           </div>
         )}
@@ -133,7 +133,7 @@ export const AuthPage: React.FC = () => {
         )}
 
         <div className="pt-4 border-t border-text-muted/10 text-center text-xs text-text-muted flex items-center justify-center gap-1.5">
-          <ShieldCheck className="w-4 h-4 text-self-care" />
+          <ShieldCheck className="w-4 h-4 text-steady" />
           <span>Your data is private & encrypted locally</span>
         </div>
       </Card>
